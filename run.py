@@ -7,13 +7,13 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('test.csv', comment='#', na_values='无此项', header=0)
 
 # 删除空白信息列
-df.dropna(subset=['Cost_National'], inplace=True)
+# df.dropna(subset=['Cost_National'], inplace=True)
 
 # 选择数值型数据
 df_numeric = df.select_dtypes(include=np.number).copy()
 
 # 删除无用的列
-df_numeric.drop(columns=['Order'], inplace=True)
+# df_numeric.drop(columns=['Order'], inplace=True)
 
 # 统计每列缺失值数量
 missing_count = df_numeric.isnull().sum()
@@ -33,7 +33,7 @@ test = df_year[~train_indices]
 # 构建随机森林模型
 rf = RandomForestRegressor(n_estimators=500, random_state=123)
 
-print(df_year)
+# print(df_year)
 
 # 拟合训练集
 rf.fit(train.drop(columns=['Score']), train['Score'])
