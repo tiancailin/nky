@@ -1,11 +1,11 @@
 Raw <-read.csv("test.csv",comment.char = "#",na.strings = "无此项",check.names = F)
-Raw <- Raw[!is.na(Raw$Cost_National) ,] # 去除空白信息列
+Raw <- Raw[!is.na(Raw$Cost_National) ,] # 去除空白信息列 #实际为删除空白信息行
 
 apply(Raw,2,is.numeric)
-Raw.Num <- Raw[,-c(1,2,7:11)]
+Raw.Num <- Raw[,-c(1,2,7:11)] # 删除1，2，7-11列
 apply(Raw.Num,2,is.numeric)
 
-Raw.Num<-Raw.Num[,-42] #delete order
+Raw.Num<-Raw.Num[,-42] #delete order # 删除 order 列
 apply(Raw.Num,2,function(x){return(sum(is.na(x)))})
 
 
@@ -16,7 +16,7 @@ library(randomForest)
 ######仅利用2018年数据
 ###################
 
-Tem <-Raw.Num[ Raw.Num$Year %in% c( 2018) ,-grep("_Score",colnames(Raw.Num))]
+Tem <-Raw.Num[ Raw.Num$Year %in% c( 2018) ,-grep("_Score",colnames(Raw.Num))] # 在2018年中，删除带_Score的列
 Tem <- Tem[,-c(1,ncol(Tem))] #year & ID
 Tem<-Tem[,apply(Tem,2,function(x){return(sum(is.na(x)))})<=0 ]
 
