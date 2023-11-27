@@ -6,18 +6,27 @@ from sklearn.model_selection import train_test_split
 
 # 读取csv文件
 # df = pd.read_csv('test.csv', comment='#', na_values='无此项', header=0)
-df = pd.read_csv('ALL.Data.csv', comment='#', na_values='无此项', header=0)
+df = pd.read_csv('2018-2020年考核单位的得分情况(2023.11）-分析.csv', comment='#', na_values='无此项', header=0, low_memory=False)
+print(df)
+input()
 
 # 删除空白信息行
 df.dropna(subset=['Cost_National'], inplace=True)
 
-#删除对应的列，根据询问lee和对比r语言代码，应删除的列有Organization、Department、Province、City、Distract、Region、Result、Order、Year、ID、
-columns_to_drop = ['Organization', 'Department', 'Province', 'City', 'Distract', 'Region', 'Region', 'Order', 'Year', 'ID']
+# 删除对应的列，根据询问lee和对比r语言代码，应删除的列有Organization、Department、Province、City、Distract、Region、Result、Order、Year、ID
+# 2023.11.24新增delete系列和unknow系列
+columns_to_drop = ['Organization', 'Department', 'Province', 'City', 'Distract', 'Region', 'Result', 'Order', 'ID', 'delete01', 'delete02', 'delete03', 'delete04', 'delete05', 'delete06', 'delete07', 'delete08', 'delete09', 'delete10', 'delete11', 'delete12', 'delete13', 'delete14', 'delete15', 'delete16', 'unknow01', 'unknow02' ] 
+# Year先保留后面需要筛选2018年的数据
 df.drop(columns=columns_to_drop, inplace=True)
+print(df)
+input()
 
 #删除带"_Score"关键字的列
 columns_to_drop = [col for col in df.columns if '_Score' in col]
+# print("这里是被删除的带_Score的列：",columns_to_drop)
 df.drop(columns=columns_to_drop,inplace=True)
+print(df)
+input()
 
 # df数据框目前删除了不必要的数据列和Cost_National为空的数据行！！！！！！！
 
@@ -27,16 +36,17 @@ print('Number of rows:', len(df_numeric))
 
 # print(df_numeric)
 # 只选取2018年的数据
-df_numeric = df_numeric[df_numeric["Year"] == 2018]
+# df_numeric = df_numeric[df_numeric["Year"] == 2018]
+# 删除Year列 
+df_numeric.drop(columns=['Year'], inplace=True)
+
 print('Number of 训练数据:', len(df_numeric))
 missing_count = df_numeric.isnull().sum()
 print("缺失条数：",len(missing_count))
 print(df_numeric.isna())
-# 删除无用的列
-df_numeric.drop(columns=['Order'], inplace=True)
 
-# 统计每列缺失值数量
-# missing_count = df_numeric.isnull().sum()
+#以0回填NaN空位
+df_numeric.fillna(0, inplace=True)
 
 
 # 去除包含缺失值的行
@@ -46,6 +56,8 @@ print('最终可训练数据:', len(df_numeric))
 # print(missing_count)
 # print(na_count)
 
+# save to excel
+df_numeric.to_excel("output.xlsx", index=False)  # For xlsx format
 
 
 
@@ -75,8 +87,9 @@ plt.scatter(test['Score'], predictions)
 plt.xlabel('Actual Score')
 plt.ylabel('Predicted Score')
 plt.title('Random Forest Regression')
-plt.savefig('predictions.png')
+plt.show()
+#plt.savefig('prediction.png')
 
 # 将模型结果保存至文件
 import joblib
-joblib.dump(rf, 'model.pkl')
+joblib.dump(rf, 'model_20231124.pkl')
