@@ -239,5 +239,5 @@ plt.show()
 
 # 将模型结果保存至文件
 import joblib
-joblib.dump(rf, 'model_20231124.pkl')
+joblib.dump(rf, 'model.pkl')
 """
