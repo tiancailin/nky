@@ -16,7 +16,7 @@ reslut_PDF02 = save_root + "2023.sample.RF.Importance.pdf"
 # df = pd.read_csv('test.csv', comment='#', na_values='无此项', header=0)
 df = pd.read_csv('2018-2020年考核单位的得分情况(2023.11）-分析.csv', comment='#', na_values='无此项', header=0, low_memory=False)
 print(df)
-input()
+
 
 # 删除空白信息行
 df.dropna(subset=['Cost_National'], inplace=True)
@@ -27,14 +27,14 @@ columns_to_drop = ['Organization', 'Department', 'Province', 'City', 'Distract',
 # Year先保留后面需要筛选2018年的数据
 df.drop(columns=columns_to_drop, inplace=True)
 print(df)
-input()
+
 
 #删除带"_Score"关键字的列
 columns_to_drop = [col for col in df.columns if '_Score' in col]
 # print("这里是被删除的带_Score的列：",columns_to_drop)
 df.drop(columns=columns_to_drop,inplace=True)
 print(df)
-input()
+
 
 # df数据框目前删除了不必要的数据列和Cost_National为空的数据行！！！！！！！
 
@@ -44,7 +44,7 @@ print('Number of rows:', len(df_numeric))
 
 # print(df_numeric)
 # 只选取特定年的数据
-df_numeric = df_numeric[df_numeric["Year"] == 2023]
+df_numeric = df_numeric[df_numeric["Year"] == 2019]
 # 删除Year列 
 df_numeric.drop(columns=['Year'], inplace=True)
 
@@ -113,9 +113,35 @@ plt.plot([0, 100], [0, 100], color='red')
 plt.text(15, 85, f"R={np.corrcoef(df_numeric.drop(samples)['Score'], test_predictions)[0, 1]:.2f}", color='blue')
 
 # 保存PDF图表
-plt.savefig(reslut_PDF01)
-plt.show()
+# plt.savefig(reslut_PDF01)
+# plt.show()
 
+# 下面是重要性排序的计算
+
+# 提取变量重要性
+importance_otu = pd.DataFrame({'Feature': df_numeric.drop(columns='Score').columns, 'Importance': rf_model.feature_importances_})
+
+# 按照重要性排序
+importance_otu = importance_otu.sort_values(by='Importance', ascending=False)
+
+# 输出前几行变量重要性
+print(importance_otu.head(20))
+
+# 保存变量重要性图表为PDF
+plt.figure(figsize=(9, 6))
+plt.title('Variable Importance')
+
+# 交换 x 和 y 轴，并按重要性从大到小排列
+# plt.barh(importance_otu['Feature'][:30], importance_otu['Importance'][:30])
+plt.barh(importance_otu['Feature'][:30][::-1], importance_otu['Importance'][:30][::-1])
+# plt.savefig(reslut_PDF02)
+# plt.show()
+
+
+
+"""
+三联gini、mse、perm重要性，先往后放放
+2023.12.11
 # 计算 Gini Importance
 gini_importance = rf_model.feature_importances_
 
@@ -174,31 +200,7 @@ plt.barh(importance_otu_permutation['Feature'][:30], importance_otu_permutation[
 plt.tight_layout()  # 调整布局以避免重叠
 plt.savefig(reslut_PDF02)
 plt.show()
-
-
 """
-# 之前跑通的，到结束
-# 提取变量重要性
-importance_otu = pd.DataFrame({'Feature': df_numeric.drop(columns='Score').columns, 'Importance': rf_model.feature_importances_})
-
-# 按照重要性排序
-importance_otu = importance_otu.sort_values(by='Importance', ascending=False)
-
-# 输出前几行变量重要性
-print(importance_otu.head())
-
-# 保存变量重要性图表为PDF
-plt.figure(figsize=(9, 6))
-plt.title('Variable Importance')
-
-# 交换 x 和 y 轴，并按重要性从大到小排列
-# plt.barh(importance_otu['Feature'][:30], importance_otu['Importance'][:30])
-plt.barh(importance_otu['Feature'][:30][::-1], importance_otu['Importance'][:30][::-1])
-plt.savefig(reslut_PDF02)
-plt.show()
-"""
-
-
 
 
 
